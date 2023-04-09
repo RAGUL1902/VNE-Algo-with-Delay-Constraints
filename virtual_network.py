@@ -2,18 +2,18 @@ class VirtualNode:
     """
     This class represents a virtual node in a Virtual Network.
     """
-    def __init__(self, node_id, cpu_capacity_request):
+    def __init__(self, node_id, cpu_capacity):
         self.node_id = node_id
-        self.cpu_capacity_request = cpu_capacity_request
+        self.cpu_capacity = cpu_capacity
 
 class VirtualLink:
     """
     This class represents a virtual link in a Virtual Network.
     """
-    def __init__(self, node1, node2, bandwidth_request):
+    def __init__(self, node1, node2, bandwidth):
         self.node1 = node1
         self.node2 = node2
-        self.bandwidth_request = bandwidth_request
+        self.bandwidth = bandwidth
 
 class VirtualNetwork:
     """
@@ -24,18 +24,18 @@ class VirtualNetwork:
         self.links = []
         self.maximum_delay = maximum_delay
 
-    def add_node(self, node_id, cpu_capacity_request):
+    def add_node(self, node_id, cpu_capacity):
         """
         This method adds a virtual node to the graph with the given node id and CPU capacity request.
         """
-        node = VirtualNode(node_id, cpu_capacity_request)
+        node = VirtualNode(node_id, cpu_capacity)
         self.nodes.append(node)
 
-    def add_link(self, node1, node2, bandwidth_request):
+    def add_link(self, node1, node2, bandwidth):
         """
         This method adds a virtual link to the graph between the given nodes with the given bandwidth request weight.
         """
-        link = VirtualLink(node1, node2, bandwidth_request)
+        link = VirtualLink(node1, node2, bandwidth)
         self.links.append(link)
 
     def get_node_by_id(self, node_id):
