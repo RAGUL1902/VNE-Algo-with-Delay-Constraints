@@ -58,3 +58,12 @@ class SubstrateNetwork:
             elif link.node2 == node:
                 adjacent_nodes.append(link.node1)
         return adjacent_nodes
+    
+    def get_node_ids(self):
+        """
+        This method returns a list of all the node IDs in the graph.
+        """
+        node_ids = []
+        for node in self.nodes:
+            node_ids.append(node.node_id)
+        return node_ids
