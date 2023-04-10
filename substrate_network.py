@@ -67,3 +67,56 @@ class SubstrateNetwork:
         for node in self.nodes:
             node_ids.append(node.node_id)
         return node_ids
+
+
+
+
+
+
+
+# import random
+
+# class SubstrateNode:
+#     def __init__(self, node_id, cpu_capacity):
+#         self.node_id = node_id
+#         self.cpu_capacity = cpu_capacity
+
+# class Link:
+#     def __init__(self, source, target, bandwidth, delay):
+#         self.source = source
+#         self.target = target
+#         self.bandwidth = bandwidth
+#         self.delay = delay
+
+# class SubstrateNetwork:
+#     def __init__(self):
+#         self.nodes = []
+#         self.links = []
+#         self.maximum_delay = 0
+    
+#     def add_node(self, node):
+#         self.nodes.append(node)
+        
+#     def add_link(self, link):
+#         self.links.append(link)
+#         self.maximum_delay = max(self.maximum_delay, link.delay)
+
+# def generate_substrate_network(num_nodes):
+#     substrate_network = SubstrateNetwork()
+
+#     # create nodes with random cpu capacity
+#     for i in range(num_nodes):
+#         cpu_capacity = random.uniform(0, 100)
+#         node = SubstrateNode(i, cpu_capacity)
+#         substrate_network.add_node(node)
+
+#     # connect nodes with probability 0.5
+#     for i in range(num_nodes):
+#         for j in range(i+1, num_nodes):
+#             if random.random() < 0.5:
+#                 bandwidth = random.uniform(0, 100)
+#                 delay = random.uniform(0, 0.005)
+#                 link = Link(i, j, bandwidth, delay)
+#                 substrate_network.add_link(link)
+
+#     return substrate_network

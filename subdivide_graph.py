@@ -1,65 +1,46 @@
-from virtual_network import VirtualNetwork, VirtualNetworkSubgraph
+from virtual_network import VirtualNetwork
 
-# define a function to divide a graph into subgraphs of hub-spoke structure
-def subdivide_graph(virtual_network: VirtualNetwork):
-    # create a dictionary to store the adjacency list of the graph
-    adjacency_dict = {}
-    for node in virtual_network.nodes:
-        node_id = node.node_id
-        adjacency_dict[node_id] = []
-
-    # add edges to the adjacency list
-    for link in virtual_network.links:
-        node1_id = link.node1.node_id
-        node2_id = link.node2.node_id
-        adjacency_dict[node1_id].append(node2_id)
-        adjacency_dict[node2_id].append(node1_id)
-
-    # calculate the degree centrality of each node
-    centrality = {}
-    for node in virtual_network.nodes:
-        node_id = node.node_id
-        adjacent_nodes = adjacency_dict[node_id]
-        degree = len(adjacent_nodes)
-        centrality[node_id] = degree
-
-    # identify the nodes with the highest degree centrality
-    hub_nodes = [node_id for node_id, degree in centrality.items() if degree >= 0.4]
-
-    # divide the graph into subgraphs of hub-spoke structure
+def divide_graph_to_subgraphs(vn):
+    # Create a dictionary to store the node ranks of all nodes
+    node_ranks = {}
+    
+    # Calculate the node rank of each node in the VirtualNetwork object
+    for node in vn.nodes:
+        adjacent_nodes = vn.get_adjacent_nodes(node)
+        bw_sum = 0
+        for adj_node in adjacent_nodes:
+            bw_sum += vn.get_link_bandwidth(node,adj_node)
+        node_ranks[node] = node.cpu_capacity * bw_sum
+    
+    # Sort the nodes in the decreasing order of their node ranks
+    sorted_nodes = sorted(node_ranks.keys(), key=lambda x: node_ranks[x], reverse=True)
+    
     subgraphs = []
-    for hub_node in hub_nodes:
-        subgraph = VirtualNetworkSubgraph((hub_node), [])
-        subgraph.spoke_nodes.append(subgraph.hub_node)
+    
+    # Iterate over the sorted nodes and create subgraphs for each node
+    while sorted_nodes:
 
-        # remove the hub node and its edges from the original graph
-        adjacency_dict.pop(hub_node)
-        for node_id in adjacency_dict.keys():
-            adjacency_dict[node_id] = [n for n in adjacency_dict[node_id] if n != hub_node]
+        hub = sorted_nodes[0]
+        spokes = vn.get_adjacent_nodes(hub)
+        subgraph_nodes = set([hub] + spokes)
 
-        # add any remaining nodes to the subgraph as spokes
-        spoke_nodes = []
-        for node_id in adjacency_dict.keys():
-            if node_id in subgraph.spoke_nodes:
-                continue
-            if any([node_id in adjacency_dict[n] for n in subgraph.spoke_nodes]):
-                spoke_node = (node_id)
-                subgraph.spoke_nodes.append(spoke_node)
-                spoke_nodes.append(spoke_node)
+        # Create a new VirtualNetwork object for the subgraph
+        subgraph = VirtualNetwork()
+        subgraph.maximum_delay = vn.maximum_delay
+        
+        # Add the nodes and links to the subgraph object
+        for node in subgraph_nodes: 
+            if node in sorted_nodes: 
+                subgraph.add_node(node.node_id, node.cpu_capacity)
+        for spoke in spokes: 
+            if spoke in sorted_nodes:
+                subgraph.add_link(hub, spoke, vn.get_link_bandwidth(hub, spoke))
 
-        # repeat the process until all spokes are found
-        while spoke_nodes:
-            new_spoke_nodes = []
-            for spoke_node in spoke_nodes:
-                adjacent_nodes = virtual_network.get_adjacent_nodes(spoke_node)
-                for node in adjacent_nodes:
-                    if node in subgraph.spoke_nodes:
-                        continue
-                    if any([node.node_id in adjacency_dict[n] for n in subgraph.spoke_nodes]):
-                        subgraph.spoke_nodes.append(node.node_id)
-                        new_spoke_nodes.append(node.node_id)
-            spoke_nodes = new_spoke_nodes
-
+        # Remove the hub and spokes from the sorted_nodes list
+        for node in subgraph_nodes:
+            if node in sorted_nodes:
+                sorted_nodes.remove(node)
+        
         subgraphs.append(subgraph)
-
+    
     return subgraphs

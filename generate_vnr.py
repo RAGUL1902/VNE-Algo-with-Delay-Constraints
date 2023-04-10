@@ -6,7 +6,7 @@ from virtual_network import VirtualLink, VirtualNetwork, VirtualNode
 def generate_vnr(n: int) -> List[VirtualNetwork]:
     vnrs = []
     for i in range(n):
-        num_nodes = random.randint(3, 6)
+        num_nodes = random.randint(5, 15)
         vnr = VirtualNetwork()
         for j in range(num_nodes):
             cpu_resource = random.randint(1, 50)

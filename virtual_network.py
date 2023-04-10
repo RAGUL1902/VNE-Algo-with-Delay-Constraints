@@ -59,7 +59,7 @@ class VirtualNetwork:
                 adjacent_nodes.append(link.node2)
             elif link.node2 == node:
                 adjacent_nodes.append(link.node1)
-        return adjacent_nodes
+        return [*set(adjacent_nodes)]
     
     def get_node_ids(self):
         """
@@ -69,11 +69,9 @@ class VirtualNetwork:
         for node in self.nodes:
             node_ids.append(node.node_id)
         return node_ids
-    
-class VirtualNetworkSubgraph:
-    """
-    This class represents a subgraph of a Virtual Network with a hub-spoke structure.
-    """
-    def __init__(self, hub_node_id, spoke_node_ids):
-        self.hub_node = hub_node_id
-        self.spoke_nodes = spoke_node_ids
+
+    def get_link_bandwidth(self, node1, node2):
+        for link in self.links:
+            if (node1 is link.node1 and node2 is link.node2) or (node1 is link.node2 and node2 is link.node1):
+                return link.bandwidth
+        return 0
