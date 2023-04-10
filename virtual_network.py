@@ -10,7 +10,7 @@ class VirtualLink:
     """
     This class represents a virtual link in a Virtual Network.
     """
-    def __init__(self, node1, node2, bandwidth):
+    def __init__(self, node1: VirtualNode, node2: VirtualNode, bandwidth :int):
         self.node1 = node1
         self.node2 = node2
         self.bandwidth = bandwidth
@@ -19,10 +19,12 @@ class VirtualNetwork:
     """
     This class represents a Virtual Network as weighted undirected graph with nodes as virtual nodes and edges as virtual links.
     """
-    def __init__(self, maximum_delay):
+    def __init__(self):
         self.nodes = []
         self.links = []
-        self.maximum_delay = maximum_delay
+        self.maximum_delay = 0.07
+
+    
 
     def add_node(self, node_id, cpu_capacity):
         """
@@ -31,7 +33,7 @@ class VirtualNetwork:
         node = VirtualNode(node_id, cpu_capacity)
         self.nodes.append(node)
 
-    def add_link(self, node1, node2, bandwidth):
+    def add_link(self, node1: VirtualNode, node2: VirtualNode, bandwidth):
         """
         This method adds a virtual link to the graph between the given nodes with the given bandwidth request weight.
         """
@@ -67,3 +69,11 @@ class VirtualNetwork:
         for node in self.nodes:
             node_ids.append(node.node_id)
         return node_ids
+    
+class VirtualNetworkSubgraph:
+    """
+    This class represents a subgraph of a Virtual Network with a hub-spoke structure.
+    """
+    def __init__(self, hub_node_id, spoke_node_ids):
+        self.hub_node = hub_node_id
+        self.spoke_nodes = spoke_node_ids
